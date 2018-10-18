@@ -4,18 +4,49 @@ This plugin enables a simple little embed that can live alongside any given Talk
 install:
 
 ```html
-<a href="#talk_thread" class="talk_comment_count">Comments</a>
+<!-- By default, the /static/embed/count.js will replace the contents of the element targeted by the .talk_comment_count selector. Adding the href="#talk_embed" will allow when you click the comment count, it will jump to the comments! -->
+<a href="#talk_embed" class="talk_comment_count">Comments</a>
 <script src="{{ TALK_URL }}/static/embed/count.js"></script>
-...
-<div id="talk_thread"></div> // The div where the Talk thread will load.
+
+<!-- ... -->
+
+<div id="talk_embed"></div> <!-- The div where the Talk embed will load. -->
+<script src="{{ TALK_URL }}/static/embed.js" onload="
+  Coral.Talk.render(document.getElementById('talk_embed'), {
+    talk: '{{ TALK_URL }}'
+  })
+"></script>
 ```
 
 Which will add the comment count to the page on the selected element! It'll even
 be translated!
 
-## Options
+## Installing
 
-The reference to the `/embed/count.js` accepts a few parameters:
+**Currently in beta!**
+
+Modify/create your `plugins.json` file to include the plugin:
+
+```
+{
+  "server": [
+    // ...
+    {"@coralproject/talk-plugin-comment-count": "^0.0.1-alpha"},
+    // ...
+  ],
+  "client": [
+    // ...
+  ]
+}
+```
+
+Which will enable it. You then need to add the `/static/embed/count.js` file on your HTML
+page, which will allow the file to be generated that will add the comment count.
+
+### URL Options
+
+The reference to the `/static/embed/count.js` accepts query parameters which you
+may combine in any order you choose:
 
 - `id` (optional, but highly recommended) - if provided it will lookup the
   counts for the asset directly, possibly without even hitting MongoDB.
@@ -33,9 +64,51 @@ Note that these parameters are required to be URI encoded, you can utilize the
 [`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)
 method to encode each parameter.
 
+#### Examples
+
+Get the comment count for a specific Asset by ID:
+
+```
+/static/embed/count.js?id=a-specific-asset-id
+```
+
+Get the comment count for a specific Asset by URL:
+
+```
+/static/embed/count.js?url=https%3A%2F%2Fcoralproject.net%2Fblog%2Fhappy-hacktoberfest%2F
+```
+
+### Configuration
+
+You can specify the following environment variables that can customize how the
+comment count files that are generated are cached:
+
+- `TALK_COMMENT_COUNT_CACHE_DURATION` (default `2m`) - a string representing the
+  duration of time that a given count will have it's file cached for. Formatted
+  via [ms](https://www.npmjs.com/package/ms).
+- `TALK_COMMENT_DETECT_COUNT_CACHE_DURATION` (default `1h`) - a string
+  representing the detection script will have it's file cached for. Formatted
+  via [ms](https://www.npmjs.com/package/ms).
+
+These will be manifested when the `/static/embed/count.js` file is served with
+the appropriate query parameters via the `Cache-Control` header.
+
+#### Example
+
+```
+TALK_COMMENT_COUNT_CACHE_DURATION=1m
+TALK_COMMENT_DETECT_COUNT_CACHE_DURATION=10m
+
+GET /static/embed/count.js?id=123
+Cache-Control: public, max-age=60
+
+GET /static/embed/count.js
+Cache-Control: public, max-age=600
+```
+
 ## Loading Strategies
 
-In order to facilitate easy loading, the `count.js` script will try various
+In order to facilitate easy loading, the `/static/embed/count.js` script will try various
 strategies to determine which Asset is being referenced.
 
 1. If the `id` is specified, then return the count for the asset with that ID.
