@@ -31,9 +31,3 @@ gulp.task('javascript', () =>
 gulp.task('compile', gulp.parallel('typescript', 'javascript'));
 
 gulp.task('default', gulp.series('clean', 'compile'));
-
-// "@babel/core": "7.0.0-beta.49",
-// "@babel/preset-env": "7.0.0-beta.49",
-// "gulp-babel": "^8.0.0-beta.2",
-
-// yarn add -D @babel/core @babel/preset-env gulp-babel

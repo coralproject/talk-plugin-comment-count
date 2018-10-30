@@ -31,7 +31,7 @@ Modify/create your `plugins.json` file to include the plugin:
 {
   "server": [
     // ...
-    {"@coralproject/talk-plugin-comment-count": "^0.0.1-beta"},
+    {"@coralproject/talk-plugin-comment-count": "^0.0.2-beta"},
     // ...
   ],
   "client": [

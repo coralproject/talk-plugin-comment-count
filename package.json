@@ -1,6 +1,6 @@
 {
   "name": "@coralproject/talk-plugin-comment-count",
-  "version": "0.0.1-beta",
+  "version": "0.0.2-beta",
   "main": "dist/index.js",
   "author": "Wyatt Johnson <wyattjoh@gmail.com>",
   "license": "Apache-2.0",
