@@ -27,9 +27,10 @@ const config = {
   )
 };
 
-function addHeaders(res: Response, expiry: number) {
+function addHeaders(res: Response, expiry: number, languageSpecific: boolean = false) {
   res.setHeader("Cache-Control", `public, max-age=${expiry}`);
   res.setHeader("Content-Type", "text/javascript");
+  res.setHeader("Vary", languageSpecific ? "Accept-Encoding, Accept-Language" : "Accept-Encoding");
 }
 
 const cacheHandler: RequestHandler = async (req: TalkRequest, res) => {
@@ -50,7 +51,7 @@ const cacheHandler: RequestHandler = async (req: TalkRequest, res) => {
   // If the URl and the ID aren't provided, we need to serve the detect script.
   if (!url && !id) {
     // Send back the headers.
-    addHeaders(res, config.DETECT_CACHE_DURATION);
+    addHeaders(res, config.DETECT_CACHE_DURATION, false);
 
     // Send the compiled template back.
     res.send(
@@ -102,7 +103,7 @@ const cacheHandler: RequestHandler = async (req: TalkRequest, res) => {
   }
 
   // Send back the headers.
-  addHeaders(res, config.COUNT_CACHE_DURATION);
+  addHeaders(res, config.COUNT_CACHE_DURATION, true);
 
   // Send the compiled template back.
   return res.send(
